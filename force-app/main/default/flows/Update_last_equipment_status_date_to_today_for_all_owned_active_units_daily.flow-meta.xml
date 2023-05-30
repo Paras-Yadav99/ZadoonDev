@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>49.0</apiVersion>
+    <description>Update last equipment status date to today for all owned/active units daily</description>
+    <interviewLabel>Update last equipment status date to today for all owned/active units daily {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Update last equipment status date to today for all owned/active units daily</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>Updates last equipment status confirmation date to today&apos;s date for all owned/active units.</description>
+        <name>Update_Last_Equipment_Status_Conf</name>
+        <label>Update Last Equipment Status Conf</label>
+        <locationX>166</locationX>
+        <locationY>316</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>IsActive</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Inventory_Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Owned</stringValue>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Last_Equipment_Status_Confirmation__c</field>
+            <value>
+                <elementReference>TodaysDate</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Product2</object>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>50</locationY>
+        <connector>
+            <targetReference>Update_Last_Equipment_Status_Conf</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>IsActive</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Inventory_Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Owned</stringValue>
+            </value>
+        </filters>
+        <object>Product2</object>
+        <schedule>
+            <frequency>Daily</frequency>
+            <startDate>2020-07-30</startDate>
+            <startTime>01:00:00.000Z</startTime>
+        </schedule>
+        <triggerType>Scheduled</triggerType>
+    </start>
+    <status>Active</status>
+    <variables>
+        <description>Today&apos;s date</description>
+        <name>TodaysDate</name>
+        <dataType>Date</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+        <value>
+            <elementReference>$Flow.CurrentDate</elementReference>
+        </value>
+    </variables>
+</Flow>

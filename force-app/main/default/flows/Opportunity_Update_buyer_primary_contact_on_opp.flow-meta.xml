@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>56.0</apiVersion>
+    <decisions>
+        <name>decision_for_Opp_Primary_Contact_buyer_con</name>
+        <label>decision for Opp Primary Contact != buyer con</label>
+        <locationX>182</locationX>
+        <locationY>335</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>opp_primary_contact_not_equal_buyer_primary_con</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Account.Primary_Contact__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.Buyer_Primary_Contact__c</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>update_Buyer_Primary_Con_with_Acc_Primary_Con</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>opp primary contact not equal buyer primary con</label>
+        </rules>
+    </decisions>
+    <description>Opportunity_Update_buyer_primary_contact_on_opp</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>After14Days</description>
+        <name>After14Days</name>
+        <dataType>Date</dataType>
+        <expression>TODAY() + 14</expression>
+    </formulas>
+    <formulas>
+        <description>After1Day</description>
+        <name>After1Day</name>
+        <dataType>Date</dataType>
+        <expression>TODAY()+1</expression>
+    </formulas>
+    <formulas>
+        <description>After2Days</description>
+        <name>After2Days</name>
+        <dataType>Date</dataType>
+        <expression>TODAY()+2</expression>
+    </formulas>
+    <formulas>
+        <description>After30Days</description>
+        <name>After30Days</name>
+        <dataType>Date</dataType>
+        <expression>TODAY()+30</expression>
+    </formulas>
+    <formulas>
+        <description>After3Days</description>
+        <name>After3Days</name>
+        <dataType>Date</dataType>
+        <expression>TODAY()+3</expression>
+    </formulas>
+    <formulas>
+        <description>After7Days</description>
+        <name>After7Days</name>
+        <dataType>Date</dataType>
+        <expression>TODAY() + 7</expression>
+    </formulas>
+    <formulas>
+        <description>emailsearchtasksubject</description>
+        <name>emailsearchtasksubject</name>
+        <dataType>String</dataType>
+        <expression>&apos;Look for WTB: &apos; + {!$Record.WTB_Parameters__c}</expression>
+    </formulas>
+    <formulas>
+        <description>FB_LI_Day_1_Next_Month_Due_Date</description>
+        <name>FB_LI_Day_1_Next_Month_Due_Date</name>
+        <dataType>Date</dataType>
+        <expression>DATE(YEAR(TODAY()),MONTH(TODAY())+1, 1)</expression>
+    </formulas>
+    <formulas>
+        <description>OpportunityName</description>
+        <name>OpportunityName</name>
+        <dataType>String</dataType>
+        <expression>{!$Record.Year_from_Unit__c} + &apos; &apos; + {!$Record.Model_from_Unit__c} + &apos; &apos; + {!$Record.Account.Name} + &apos; &apos; + {!$Record.Product__c}</expression>
+    </formulas>
+    <formulas>
+        <description>today</description>
+        <name>TODAY</name>
+        <dataType>Date</dataType>
+        <expression>TODAY()</expression>
+    </formulas>
+    <formulas>
+        <description>WaitingForBuyerWireTaskSubject</description>
+        <name>WaitingForBuyerWireTaskSubject</name>
+        <dataType>String</dataType>
+        <expression>&quot;Wire should be coming in for $&quot; + TEXT({!$Record.Pro_Forma_Price_Sent__c}) + &quot;. Once received, move opp to delivering (if we are doing freight) or closed won stage&quot;</expression>
+    </formulas>
+    <interviewLabel>Opportunity - {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Opportunity -Update buyer primary contact on opp</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>update_Buyer_Primary_Con_with_Acc_Primary_Con</description>
+        <name>update_Buyer_Primary_Con_with_Acc_Primary_Con</name>
+        <label>update Buyer Primary Con with Acc Primary Con</label>
+        <locationX>50</locationX>
+        <locationY>455</locationY>
+        <inputAssignments>
+            <field>Buyer_Primary_Contact__c</field>
+            <value>
+                <elementReference>$Record.Account.Primary_Contact__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>decision_for_Opp_Primary_Contact_buyer_con</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>AccountId</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <object>Opportunity</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

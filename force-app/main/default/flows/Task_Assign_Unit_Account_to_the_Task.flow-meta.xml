@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>56.0</apiVersion>
+    <decisions>
+        <name>Check_account_is_on_the_unit_or_not</name>
+        <label>Check account is on the unit or not</label>
+        <locationX>182</locationX>
+        <locationY>575</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Check_account_null_or_not</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Unit.Account__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_task</targetReference>
+            </connector>
+            <label>Check account null or not</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_for_task_subject_and_case_Web_Name</name>
+        <label>Check for task subject and case Web Name</label>
+        <locationX>710</locationX>
+        <locationY>575</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Check_task_subject</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Case.SuppliedName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Amazon.com</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>delete_task</targetReference>
+            </connector>
+            <label>Check task subject</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_the_record_object</name>
+        <label>Check the record object</label>
+        <locationX>644</locationX>
+        <locationY>335</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Check_if_what_Id_is_of_unit</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.WhatId</leftValueReference>
+                <operator>StartsWith</operator>
+                <rightValue>
+                    <stringValue>01t</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Subject</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Confirm unit availability and see if any other machines are available for sale</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Unit</targetReference>
+            </connector>
+            <label>Check if what Id is of unit</label>
+        </rules>
+        <rules>
+            <name>Check_if_whatId_is_of_Case</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.WhatId</leftValueReference>
+                <operator>StartsWith</operator>
+                <rightValue>
+                    <stringValue>500</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Case</targetReference>
+            </connector>
+            <label>Check if whatId is of Case</label>
+        </rules>
+    </decisions>
+    <description>Be able to see the seller Account when seeing this task in my task list</description>
+    <environments>Default</environments>
+    <interviewLabel>Task- Assign Unit Account to the Task {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Task- After Insert  to the Task</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordDeletes>
+        <name>delete_task</name>
+        <label>delete task</label>
+        <locationX>578</locationX>
+        <locationY>695</locationY>
+        <inputReference>$Record</inputReference>
+    </recordDeletes>
+    <recordLookups>
+        <name>Get_Case</name>
+        <label>Get Case</label>
+        <locationX>710</locationX>
+        <locationY>455</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_for_task_subject_and_case_Web_Name</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.WhatId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Case</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Unit</name>
+        <label>Get Unit</label>
+        <locationX>182</locationX>
+        <locationY>455</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_account_is_on_the_unit_or_not</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.WhatId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Product2</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Update_task</name>
+        <label>Update task</label>
+        <locationX>50</locationX>
+        <locationY>695</locationY>
+        <inputAssignments>
+            <field>Account__c</field>
+            <value>
+                <elementReference>Get_Unit.Account__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>518</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_the_record_object</targetReference>
+        </connector>
+        <object>Task</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

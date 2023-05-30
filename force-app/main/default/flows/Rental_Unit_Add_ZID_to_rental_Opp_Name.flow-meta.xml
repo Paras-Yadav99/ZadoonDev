@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>56.0</apiVersion>
+    <decisions>
+        <description>decision_if_Opportunity_is_Rental</description>
+        <name>decision_if_Opportunity_is_Rental</name>
+        <label>decision if Opportunity is Rental</label>
+        <locationX>182</locationX>
+        <locationY>335</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Opp_is_Rental</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Opportunity__r.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>$Label.Opp_Rec_type_Dev_Name_Rental</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>update_Opp_related_to_OppLineItem</targetReference>
+            </connector>
+            <label>Opp is Rental</label>
+        </rules>
+    </decisions>
+    <description>Rental_Unit_Add_ZID_to_rental_Opp_Name</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>OppNameChange</description>
+        <name>OppNameChange</name>
+        <dataType>String</dataType>
+        <expression>TRIM(LEFT(&apos;RENT&apos; + &apos; &apos; + {!$Record.Opportunity__r.Name} + &apos; &apos; + {!$Record.Unit__r.ZID__c},120))</expression>
+    </formulas>
+    <formulas>
+        <description>Related_Unit_Add_ZID</description>
+        <name>Related_Unit_Add_ZID</name>
+        <dataType>String</dataType>
+        <expression>{!$Record.Opportunity__r.Related_Units__c} + &apos; &apos; + {!$Record.Unit__r.ZID__c}</expression>
+    </formulas>
+    <interviewLabel>Rental Unit - Add ZID to rental Opp {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Rental Unit - Add ZID to rental Opp Name</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>update_Opp_related_to_OppLineItem</description>
+        <name>update_Opp_related_to_OppLineItem</name>
+        <label>update Opp related to OppLineItem</label>
+        <locationX>50</locationX>
+        <locationY>455</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Opportunity__c</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Name</field>
+            <value>
+                <elementReference>OppNameChange</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Related_Units__c</field>
+            <value>
+                <elementReference>Related_Unit_Add_ZID</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Opportunity</object>
+    </recordUpdates>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>decision_if_Opportunity_is_Rental</targetReference>
+        </connector>
+        <object>Rental_Unit__c</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Obsolete</status>
+</Flow>
